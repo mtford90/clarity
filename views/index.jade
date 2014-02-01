@@ -3,3 +3,24 @@ extends layout
 block content
   h1= title
   p Welcome to #{title}
+  div(class="demo", ng-app="vision")
+      div(class="gridster")
+          ul(ng-controller="StatsController")
+              li(data-row="1", data-col="1", data-sizex="1", data-sizey="1")
+              li(data-row="2", data-col="1", data-sizex="1", data-sizey="1")
+              li(data-row="3", data-col="1", data-sizex="1", data-sizey="1")
+              li(data-row="1", data-col="2", data-sizex="2", data-sizey="1")
+              li(data-row="2", data-col="2", data-sizex="2", data-sizey="2")
+                  div(ng-show="cpuUsage" class="view")
+                      div(class="cell")
+                          div(class="data")
+                              h1(class="title") CPU Usage
+                              h2(class="value") {{cpuUsage.usage}}%
+                      p(class="updated-at") Last updated at {{cpuUsage.lastUpdated}}
+              li(data-row="1", data-col="1", data-sizex="1", data-sizey="1")
+              li(data-row="2", data-col="2", data-sizex="2", data-sizey="1")
+              li(data-row="3", data-col="1", data-sizex="1", data-sizey="1")
+              li(data-row="1", data-col="1", data-sizex="1", data-sizey="1")
+              li(data-row="3", data-col="1", data-sizex="1", data-sizey="1")
+              li(data-row="1", data-col="1", data-sizex="1", data-sizey="1")
+              li(data-row="2", data-col="1", data-sizex="1", data-sizey="2")

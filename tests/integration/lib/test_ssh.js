@@ -5,7 +5,7 @@
 var SSH = require('../../../lib/ssh');
 var Utils = require('../../../lib/utils');
 var Logger = require('../../../config').logger;
-
+var Supervisor = require('../../../lib/supervisor');
 
 var options = {
     host: '46.51.201.85',
@@ -66,6 +66,19 @@ module.exports = {
                 test.done();
             });
         });
+    },
+
+    'Test Supervisor Status': function (test) {
+        var ssh = new SSH.SSHConnection(options);
+        var supervisor = new Supervisor.Supervisor(ssh, '/home/ubuntu/git/config/supervisor/supervisord.dev.conf');
+        supervisor.status(function (err, data) {
+            test.ok(!err, 'Error returned: ' + err);
+            test.ok(data, 'Failed to get average load');
+            Logger.info('Returned the following supervisor data: ', data);
+            ssh.close(function () {
+                test.done();
+            });
+        })
     }
 
 };

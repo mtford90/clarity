@@ -1,6 +1,6 @@
 body {
-  padding: 50px;
-  /*font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;*/
+    padding: 0;
+    margin: 0;
 }
 
 a {
@@ -51,7 +51,7 @@ li {
 
 /* Gridster styles */
 .demo {
-    margin: 3em 0;
+    /*margin: 3em 0;*/
     padding: 7.5em 0 5.5em;
     background: #004756;
 }

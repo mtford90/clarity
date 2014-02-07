@@ -19,10 +19,10 @@ var options = {
 module.exports = {
 
     'Test Logging': function (test) {
-        var sshPool = new SSH.SSHConnection(options);
+        var sshPool = new SSH.SSHConnectionPool(options);
         sshPool.execute('echo "blah" > /tmp/test.log', function (err, data) {
             test.ok(!err, 'Error creating log file: ', err);
-            sshPool.close(function () {
+            sshPool.drain(function () {
                 test.done();
             });
         });

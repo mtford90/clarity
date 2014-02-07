@@ -5274,7 +5274,7 @@ var nodeNames = "abbr|article|aside|audio|bdi|canvas|data|datalist|details|figca
 	rscriptTypeMasked = /^true\/(.*)/,
 	rcleanScript = /^\s*<!(?:\[CDATA\[|--)|(?:\]\]|--)>\s*$/g,
 
-	// We have to close these tags to support XHTML (#13200)
+	// We have to drain these tags to support XHTML (#13200)
 	wrapMap = {
 		option: [ 1, "<select multiple='multiple'>", "</select>" ],
 		legend: [ 1, "<fieldset>", "</fieldset>" ],
@@ -6018,7 +6018,7 @@ function defaultDisplay( nodeName ) {
 
 			// Support: IE
 			doc.write();
-			doc.close();
+			doc.drain();
 
 			display = actualDisplay( nodeName, doc );
 			iframe.detach();
@@ -8540,7 +8540,7 @@ jQuery.parseJSON = function( data ) {
 
 		// Determine new depth
 		// array/object open ("[" or "{"): depth += true - false (increment)
-		// array/object close ("]" or "}"): depth += false - true (decrement)
+		// array/object drain ("]" or "}"): depth += false - true (decrement)
 		// other cases ("," or primitive): depth += true - true (numeric cast)
 		depth += !close - !open;
 

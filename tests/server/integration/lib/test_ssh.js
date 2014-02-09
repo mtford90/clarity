@@ -2,9 +2,9 @@
  * Created by mtford on 31/01/2014.
  */
 
-var SSH = require('../../../lib/ssh');
-var Utils = require('../../../lib/utils');
-var Logger = require('../../../config').logger;
+var SSH = require('../../../../lib/ssh');
+var Utils = require('../../../../lib/utils');
+var Logger = require('../../../../config').logger;
 
 var options = {
     host: '46.51.201.85',

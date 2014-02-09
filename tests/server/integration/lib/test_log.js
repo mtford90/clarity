@@ -2,11 +2,11 @@
  * Created by mtford on 01/02/2014.
  */
 
-var SSH = require('../../../lib/ssh');
-var Utils = require('../../../lib/utils');
-var Logger = require('../../../config').logger;
-var Supervisor = require('../../../lib/supervisor');
-var LogMonitor = require('../../../lib/log-monitor');
+var SSH = require('../../../../lib/ssh');
+var Utils = require('../../../../lib/utils');
+var Logger = require('../../../../config').logger;
+var Supervisor = require('../../../../lib/supervisor');
+var LogMonitor = require('../../../../lib/log-monitor');
 
 var options = {
     host: '46.51.201.85',

@@ -71,15 +71,18 @@ app.get('/stats/cpu', function (req, res) {
     });
 });
 
-
 app.get('/stats/percUsed', function (req, res) {
     var path = req.query.path;
-    if (!path) badRequest(res, 'Need to give a path');
-    app.sshPool.oneShot(function (err, client) {
-        client.percentageUsed(path, function (error, data) {
-            success(res, data);
+    if (!path) {
+        badRequest(res, 'Need to give a path');
+    }
+    else {
+        app.sshPool.oneShot(function (err, client) {
+            client.percentageUsed(path, function (error, data) {
+                success(res, data);
+            });
         });
-    });
+    }
 });
 
 function badRequest(res, errorMessage) {
@@ -99,12 +102,16 @@ function success(res, data) {
 
 app.get('/stats/percFree', function (req, res) {
     var path = req.query.path;
-    if (!path) badRequest(res, 'Need to give a path');
-    app.sshPool.oneShot(function (err, client) {
-        client.percentageFree(path, function (error, data) {
-            success(res, data);
+    if (!path) {
+        badRequest(res, 'Need to give a path');
+    }
+    else {
+        app.sshPool.oneShot(function (err, client) {
+            client.percentageFree(path, function (error, data) {
+                success(res, data);
+            });
         });
-    });
+    }
 });
 
 //app.get('/users/default/grid', function (req, res) {

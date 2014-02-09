@@ -2,9 +2,9 @@
  * Created by mtford on 01/02/2014.
  */
 
-var Data = require('../../../lib/sql-data');
-var Utils = require('../../../lib/utils');
-var Logger = require('../../../config').logger;
+var Data = require('../../../../lib/sql-data');
+var Utils = require('../../../../lib/utils');
+var Logger = require('../../../../config').logger;
 
 module.exports = {
 

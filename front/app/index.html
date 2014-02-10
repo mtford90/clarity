@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="en" ng-app="myApp">
+<head>
+  <meta charset="utf-8">
+  <title>My AngularJS App</title>
+  <link rel="stylesheet" href="css/app.css"/>
+  <link rel="stylesheet" href="css/style.css"/>
+  <link rel="stylesheet" href="lib/jquery/plugins/gridster/jquery.gridster.min.css"/>
+</head>
+<body>
+  <ul class="menu">
+    <li><!--suppress HtmlUnknownAnchorTarget -->
+        <a href="#/view1">view1</a></li>
+    <li><!--suppress HtmlUnknownAnchorTarget -->
+        <a href="#/view2">view2</a></li>
+  </ul>
+
+  <div ng-view></div>
+
+  <div>Angular seed app: v<span app-version></span></div>
+
+  <div class="demo">
+      <div class="gridster">
+          <ul ng-controller="StatsController">
+              <li data-row="1" data-col="1" data-sizex="2" data-sizey="2">
+                  <div ng-show="swap" class="view">
+                       <div class="cell">
+                           <div class="data">
+                               <h1 class="title">
+                                   Swap Usage
+                               </h1>
+                               <h2 class="value">
+                                   {{swap.usage.toFixed(4)*100}}%
+                               </h2>
+                           </div>
+                       </div>
+                      <p class="updated-at">
+                          Last updated at {{swap.lastUpdated}}
+                      </p>
+                  </div>
+              </li>
+              <li data-row="1" data-col="2" data-sizex="2" data-sizey="2">
+                  <div ng-show="cpuUsage" class="view">
+                      <div class="cell">
+                          <div class="data">
+                              <h1 class="title">
+                                  CPU Usage
+                              </h1>
+                              <h2 class="value">
+                                  {{cpuUsage.usage}}%
+                              </h2>
+                          </div>
+                      </div>
+                      <p class="updated-at">
+                          Last updated at {{cpuUsage.lastUpdated}}
+                      </p>
+                  </div>
+              </li>
+              <li data-row="1" data-col="3" data-sizex="2" data-sizey="2">
+                  <div ng-show="percUsed.ubuntu" class="view">
+                      <div class="cell">
+                          <div class="data">
+                              <h1 class="title">
+                                  {{percUsed.ubuntu.path}}
+                              </h1>
+                              <h2 class="value">
+                                  {{percUsed.ubuntu.usage*100}}%
+                              </h2>
+                          </div>
+                      </div>
+                      <p class="updated-at">
+                          Last updated at {{percUsed.ubuntu.lastUpdated}}
+                      </p>
+                  </div>
+              </li>
+              <li data-row="1" data-col="4" data-sizex="2" data-sizey="2">
+                  <div ng-show="percUsed.mnt" class="view">
+                      <div class="cell">
+                          <div class="data">
+                              <h1 class="title">
+                                  {{percUsed.mnt.path}}
+                              </h1>
+                              <h2 class="value">
+                                  {{percUsed.mnt.usage*100}}%
+                              </h2>
+                          </div>
+                      </div>
+                      <p class="updated-at">
+                          Last updated at {{percUsed.mnt.lastUpdated}}
+                      </p>
+                  </div>
+              </li>
+          </ul>
+      </div>
+  </div>
+
+  <!-- In production use:
+  <script src="//ajax.googleapis.com/ajax/libs/angularjs/x.x.x/angular.min.js"></script>
+  -->
+
+  <script src="lib/jquery/jquery-1.11.0.js"></script>
+  <script src="lib/jquery/plugins/gridster/jquery.gridster.js"></script>
+  <script src="lib/underscore/underscore.js"></script>
+  <script src="lib/angular/angular.js"></script>
+  <script src="lib/angular/angular-route.js"></script>
+  <script src="js/angular/app.js"></script>
+  <script src="js/angular/services.js"></script>
+  <script src="js/angular/controllers.js"></script>
+  <script src="js/angular/filters.js"></script>
+  <script src="js/angular/directives.js"></script>
+  <script src="js/main.js"></script>
+
+</body>
+</html>

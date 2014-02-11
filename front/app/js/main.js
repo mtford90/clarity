@@ -9,6 +9,22 @@ $(function(){
         widget_base_dimensions: [140, 140]
     });
 
+    var editable = $('.simpleTabsNavigation li a');
+
+    editable.dblclick(function(event){
+        $(event.currentTarget).prop('contenteditable', true);
+        $(event.currentTarget).focus();
+        document.execCommand('selectAll', false, null);
+    });
+
+    editable.focusout(function(event) {
+        $(event.currentTarget).prop('contenteditable', false);
+    });
+
+    editable.keypress(function(e) {
+        return e.which != 13;
+    })
+
 });
 
 

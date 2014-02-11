@@ -1,10 +1,16 @@
 body {
-    padding: 0;
-    margin: 0;
+    margin: 0 0 0 0;
+    font-family: 'Open Sans', "Helvetica Neue", Helvetica, Arial, sans-serif !important;
+    color: #ffffff;
 }
 
 a {
   color: #00B7FF;
+}
+
+#content {
+    padding-top: 15px;
+    /*margin: 15px 0 0 0;*/
 }
 
 .gridster {
@@ -57,7 +63,7 @@ li {
 }
 
 li {
-    font-family: 'Open Sans', "Helvetica Neue", Helvetica, Arial, sans-serif;
+    color: #000000;
 
 }
 
@@ -81,4 +87,96 @@ li {
 .view {
     height: 100%;
     width: 100%;
+}
+
+#settings-button {
+    width: 80px;
+    height: 86px;
+}
+
+/**************************
+    Simpletabs Overrides
+*/
+
+div.simpleTabsContent {
+    border:0;
+    padding:0;
+    margin:0;
+}
+
+ul.simpleTabsNavigation {
+    margin-top: 0;
+    margin-bottom: 0;
+}
+
+/**************************
+    Add button
+*/
+
+#dashboard-add-button {
+    float:right;
+}
+
+#dashboard-add-button .inner-add-button-div {
+    color: #004756;
+}
+
+.add-button {
+    width: 48px;
+    height: 49px;
+    display: table;
+    cursor: pointer;
+}
+
+#dashboard-add-button :hover {
+    color: #ffffff;
+    background: #004756;
+}
+
+.inner-add-button-div {
+    display: table-cell;
+    vertical-align: middle;
+    text-align: center;
+    font-weight: bold;
+    font-size: 26px;
+    padding: 0;
+}
+
+/**************************
+    Settings
+*/
+
+#server-list {
+    margin-left: auto;
+    margin-right: auto;
+}
+
+#servers-header {
+    position: relative;
+}
+
+#servers-add-button {
+    position: absolute;
+    right: 0;
+    top: 0;
+}
+
+#servers-add-button :hover {
+    background: #ffffff;
+    color: #004756;
+}
+
+#servers {
+    padding-top: 15px;
+    padding-bottom: 15px;
+}
+
+#inner-servers {
+    margin-left: auto;
+    margin-right: auto;
+    width: 968px;
+}
+
+.server {
+    background: #ffffff;
 }

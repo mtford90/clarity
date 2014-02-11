@@ -3,96 +3,138 @@
 <head>
   <meta charset="utf-8">
   <title>My AngularJS App</title>
-  <link rel="stylesheet" href="css/app.css"/>
-  <link rel="stylesheet" href="css/style.css"/>
+
   <link rel="stylesheet" href="lib/jquery/plugins/gridster/jquery.gridster.min.css"/>
+  <link rel="stylesheet" href="lib/jquery/plugins/pageslide/jquery.pageslide.css"/>
+<link rel="stylesheet" href="lib/simpletab/simpletabs.css"/>
+<link rel="stylesheet" href="lib/accordion/format.css"/>
+    <link rel="stylesheet" href="css/app.css"/>
+
+    <link rel="stylesheet" href="css/style.css"/>
 </head>
 <body>
-  <ul class="menu">
-    <li><!--suppress HtmlUnknownAnchorTarget -->
-        <a href="#/view1">view1</a></li>
-    <li><!--suppress HtmlUnknownAnchorTarget -->
-        <a href="#/view2">view2</a></li>
-  </ul>
+  <!--<ul class="menu">-->
+    <!--<li>&lt;!&ndash;suppress HtmlUnknownAnchorTarget &ndash;&gt;-->
+        <!--<a href="#/view1">view1</a></li>-->
+    <!--<li>&lt;!&ndash;suppress HtmlUnknownAnchorTarget &ndash;&gt;-->
+        <!--<a href="#/view2">view2</a></li>-->
+  <!--</ul>-->
 
-  <div ng-view></div>
+  <!--<div ng-view></div>-->
 
-  <div>Angular seed app: v<span app-version></span></div>
+  <!--<div>Angular seed app: v<span app-version></span></div>-->
+  <!--<img id="settings-button" src="img/settings.png"/>-->
 
-  <div class="demo">
-      <div class="gridster">
-          <ul ng-controller="StatsController">
-              <li data-row="1" data-col="1" data-sizex="2" data-sizey="2">
-                  <div ng-show="swap" class="view">
-                       <div class="cell">
-                           <div class="data">
-                               <h1 class="title">
-                                   Swap Usage
-                               </h1>
-                               <h2 class="value">
-                                   {{swap.usage.toFixed(4)*100}}%
-                               </h2>
-                           </div>
-                       </div>
-                      <p class="updated-at">
-                          Last updated at {{swap.lastUpdated}}
-                      </p>
-                  </div>
-              </li>
-              <li data-row="1" data-col="2" data-sizex="2" data-sizey="2">
-                  <div ng-show="cpuUsage" class="view">
-                      <div class="cell">
-                          <div class="data">
-                              <h1 class="title">
-                                  CPU Usage
-                              </h1>
-                              <h2 class="value">
-                                  {{cpuUsage.usage}}%
-                              </h2>
-                          </div>
-                      </div>
-                      <p class="updated-at">
-                          Last updated at {{cpuUsage.lastUpdated}}
-                      </p>
-                  </div>
-              </li>
-              <li data-row="1" data-col="3" data-sizex="2" data-sizey="2">
-                  <div ng-show="percUsed.ubuntu" class="view">
-                      <div class="cell">
-                          <div class="data">
-                              <h1 class="title">
-                                  {{percUsed.ubuntu.path}}
-                              </h1>
-                              <h2 class="value">
-                                  {{percUsed.ubuntu.usage*100}}%
-                              </h2>
-                          </div>
-                      </div>
-                      <p class="updated-at">
-                          Last updated at {{percUsed.ubuntu.lastUpdated}}
-                      </p>
-                  </div>
-              </li>
-              <li data-row="1" data-col="4" data-sizex="2" data-sizey="2">
-                  <div ng-show="percUsed.mnt" class="view">
-                      <div class="cell">
-                          <div class="data">
-                              <h1 class="title">
-                                  {{percUsed.mnt.path}}
-                              </h1>
-                              <h2 class="value">
-                                  {{percUsed.mnt.usage*100}}%
-                              </h2>
-                          </div>
-                      </div>
-                      <p class="updated-at">
-                          Last updated at {{percUsed.mnt.lastUpdated}}
-                      </p>
-                  </div>
-              </li>
+  <div id="dashboard-add-button" class="add-button"><div class="inner-add-button-div"><div>+</div></div></div>
+
+  <div id="content">
+
+      <div class="simpleTabs">
+          <ul class="simpleTabsNavigation">
+              <li><a href="#">Dashboard</a></li>
+              <li><a href="#">Settings</a></li>
           </ul>
+          <div class="simpleTabsContent">
+              <div class="demo">
+                  <div class="gridster">
+                      <ul ng-controller="StatsController">
+                          <li data-row="1" data-col="1" data-sizex="2" data-sizey="2">
+                              <div ng-show="swap" class="view">
+                                  <div class="cell">
+                                      <div class="data">
+                                          <h1 class="title">
+                                              Swap Usage
+                                          </h1>
+                                          <h2 class="value">
+                                              {{swap.usage.toFixed(4)*100}}%
+                                          </h2>
+                                      </div>
+                                  </div>
+                                  <p class="updated-at">
+                                      Last updated at {{swap.lastUpdated}}
+                                  </p>
+                              </div>
+                          </li>
+                          <li data-row="1" data-col="2" data-sizex="2" data-sizey="2">
+                              <div ng-show="cpuUsage" class="view">
+                                  <div class="cell">
+                                      <div class="data">
+                                          <h1 class="title">
+                                              CPU Usage
+                                          </h1>
+                                          <h2 class="value">
+                                              {{cpuUsage.usage}}%
+                                          </h2>
+                                      </div>
+                                  </div>
+                                  <p class="updated-at">
+                                      Last updated at {{cpuUsage.lastUpdated}}
+                                  </p>
+                              </div>
+                          </li>
+                          <li data-row="1" data-col="3" data-sizex="2" data-sizey="2">
+                              <div ng-show="percUsed.ubuntu" class="view">
+                                  <div class="cell">
+                                      <div class="data">
+                                          <h1 class="title">
+                                              {{percUsed.ubuntu.path}}
+                                          </h1>
+                                          <h2 class="value">
+                                              {{percUsed.ubuntu.usage*100}}%
+                                          </h2>
+                                      </div>
+                                  </div>
+                                  <p class="updated-at">
+                                      Last updated at {{percUsed.ubuntu.lastUpdated}}
+                                  </p>
+                              </div>
+                          </li>
+                          <li data-row="1" data-col="4" data-sizex="2" data-sizey="2">
+                              <div ng-show="percUsed.mnt" class="view">
+                                  <div class="cell">
+                                      <div class="data">
+                                          <h1 class="title">
+                                              {{percUsed.mnt.path}}
+                                          </h1>
+                                          <h2 class="value">
+                                              {{percUsed.mnt.usage*100}}%
+                                          </h2>
+                                      </div>
+                                  </div>
+                                  <p class="updated-at">
+                                      Last updated at {{percUsed.mnt.lastUpdated}}
+                                  </p>
+                              </div>
+                          </li>
+                      </ul>
+                  </div>
+              </div><!-- div:demo -->
+          </div>
+          <div class="simpleTabsContent">
+              <div id="servers" class="demo">
+                  <div id="inner-servers">
+                      <div id="servers-header" class="header">
+                          <h1>Servers</h1>
+                          <div id="servers-add-button" class="add-button"><div class="inner-add-button-div"><div>+</div></div></div>
+                      </div>
+                      <div id="server-list">
+                          <div class="accordionButton">Localhost</div>
+                          <div class="accordionContent">Content 1<br /><br /><br /><br /><br /><br /><br /><br />Long Example</div>
+                          <div class="accordionButton">Dev</div>
+                          <div class="accordionContent">Content 2<br /><br /><br /><br /><br />Medium Example</div>
+                          <div class="accordionButton">Prod</div>
+                          <div class="accordionContent">Content 1<br />Short Example</div>
+                      </div>
+                  </div>
+              </div>
+          </div>
       </div>
+
   </div>
+
+
+
+
 
   <!-- In production use:
   <script src="//ajax.googleapis.com/ajax/libs/angularjs/x.x.x/angular.min.js"></script>
@@ -100,6 +142,8 @@
 
   <script src="lib/jquery/jquery-1.11.0.js"></script>
   <script src="lib/jquery/plugins/gridster/jquery.gridster.js"></script>
+  <script src="lib/jquery/plugins/pageslide/jquery.pageslide.js"></script>
+  <script src="lib/accordion/javascript.js"></script>
   <script src="lib/underscore/underscore.js"></script>
   <script src="lib/angular/angular.js"></script>
   <script src="lib/angular/angular-route.js"></script>
@@ -109,6 +153,7 @@
   <script src="js/angular/filters.js"></script>
   <script src="js/angular/directives.js"></script>
   <script src="js/main.js"></script>
+  <script src="lib/simpletab/simpletabs_1.3.js"></script>
 
 </body>
 </html>

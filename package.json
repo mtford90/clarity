@@ -6,26 +6,24 @@
     "start": "node app.js"
   },
   "dependencies": {
-    "express": "3.4.8",
-    "jade": "*",
+    "express": "3.4.7",
     "ssh2": "0.2.17",
-    "underscore": "1.5.2",
+    "underscore": "1.5.1",
     "nedb": "0.10.2",
-    "generic-pool": "2.0.4",
+    "generic-pool": "2.0.3",
     "core-util-is": "1.0.1",
-      "winston": "0.7.2",
-      "node-uuid": "1.4.1"
+    "node-uuid": "1.4.1",
+    "pkginfo": "0.3.0",
+    "cycle": "1.0.3",
+    "colors": "0.6.2",
+    "stack-trace": "0.0.8",
+    "async": "0.2.10"
   },
   "devDependencies": {
-    "phantomjs": "~1.9",
-    "karma": "~0.10",
-    "karma-junit-reporter": "~0.1",
-    "karma-jasmine": "~0.1",
-    "protractor": "~0.17.0",
     "mocha": "~1.17.1",
     "should": "~3.1.2",
     "supertest": "~0.9.0",
-    "node-unit": "~0.8.4"
+    "nodeunit": "~0.8.4"
   },
   "description": "vision ======",
   "main": "setup.js",

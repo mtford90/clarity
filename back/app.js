@@ -48,7 +48,7 @@ app.sshPool = new ssh.SSHConnectionPool({
     host: '46.51.201.85',
     port: 22,
     username: 'ubuntu',
-    privateKey: require('fs').readFileSync('/Users/mtford/Dropbox/Drake/Server-Side/dev.pem')
+    privateKey: require('fs').readFileSync('/home/clarity/mosayc.pem')
 });
 
 app.get('/', function(req, res) {

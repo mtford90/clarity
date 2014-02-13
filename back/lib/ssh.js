@@ -166,8 +166,8 @@ var SSHConnectionPool = function(options) {
 
     var self = this;
 
-    // The below specifies available options + defaults
-    var defaultOptions = {
+    // The below specifies available options  
+    defaultOptions = {
         host: '',
         port: null,
         username: '',
@@ -231,10 +231,10 @@ var SSHConnectionPool = function(options) {
 //                    }
                 });
                 client.connect({
-                    host: '46.51.201.85',
-                    port: 22,
-                    username: 'ubuntu',
-                    privateKey: require('fs').readFileSync('/Users/mtford/Dropbox/Drake/Server-Side/dev.pem')
+                    host: self.host,
+                    port: self.port,
+                    username: self.username,
+                    privateKey: self.privateKey
                 });
 
             },

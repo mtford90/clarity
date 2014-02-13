@@ -18,12 +18,12 @@ a {
     margin: 0 auto;
 }
 
-ul {
+.gridster ul {
     padding: 0;
     list-style-type: none;
 }
 
-li {
+.gridster li {
     padding:0; margin:0;
     /*list-style: none;*/
      /*text-indent: -2em;*/
@@ -62,7 +62,7 @@ li {
     background: #004756;
 }
 
-li {
+.demo li {
     color: #000000;
 
 }
@@ -93,6 +93,17 @@ li {
     width: 80px;
     height: 86px;
 }
+
+#grid-add-button {
+    /*position: absolute;*/
+    /*left: -40px;*/
+}
+
+#grid-add-button :hover {
+    color: #004756;
+    background: #ffffff;
+}
+
 
 /**************************
     Simpletabs Overrides
@@ -146,6 +157,8 @@ ul.simpleTabsNavigation {
     Settings
 */
 
+
+
 #server-list {
     margin-left: auto;
     margin-right: auto;
@@ -171,7 +184,7 @@ ul.simpleTabsNavigation {
     padding-bottom: 15px;
 }
 
-#inner-servers {
+.inner {
     margin-left: auto;
     margin-right: auto;
     width: 968px;

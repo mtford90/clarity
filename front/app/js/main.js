@@ -23,7 +23,29 @@ $(function(){
 
     editable.keypress(function(e) {
         return e.which != 13;
-    })
+    });
+
+    $(document).ready(function () {
+        $(".hoverli").hover(
+            function () {
+                $('ul.file_menu').stop(true, true).slideDown('medium');
+            },
+            function () {
+                $('ul.file_menu').stop(true,true).slideUp('medium');
+            }
+        );
+
+        $( window ).resize(function() {
+            console.log('hi');
+            $(".gridster ul").gridster({
+                widget_margins: [10, 10],
+                widget_base_dimensions: [140, 140]
+            });
+        });
+
+    });
+
+
 
 });
 

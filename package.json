@@ -1,5 +1,5 @@
 {
-  "name": "application-name",
+  "name": "Clarity",
   "version": "0.0.1",
   "private": true,
   "scripts": {
@@ -7,13 +7,36 @@
   },
   "dependencies": {
     "express": "3.4.8",
-    "jade": "*"
+    "jade": "*",
+    "ssh2": "0.2.17",
+    "underscore": "1.5.2",
+    "nedb": "0.10.2",
+    "generic-pool": "2.0.4",
+    "core-util-is": "1.0.1",
+      "winston": "0.7.2",
+      "node-uuid": "1.4.1"
   },
   "devDependencies": {
-    "phantomjs" : "~1.9",
-    "karma" : "~0.10",
-    "karma-junit-reporter" : "~0.1",
-    "karma-jasmine" : "~0.1",
-    "protractor" : "~0.17.0"
-  }
+    "phantomjs": "~1.9",
+    "karma": "~0.10",
+    "karma-junit-reporter": "~0.1",
+    "karma-jasmine": "~0.1",
+    "protractor": "~0.17.0",
+    "mocha": "~1.17.1",
+    "should": "~3.1.2",
+    "supertest": "~0.9.0",
+    "node-unit": "~0.8.4"
+  },
+  "description": "vision ======",
+  "main": "setup.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mtford90/vision.git"
+  },
+  "author": "Michael Ford",
+  "license": "BSD-2-Clause",
+  "bugs": {
+    "url": "https://github.com/mtford90/vision/issues"
+  },
+  "homepage": "https://github.com/mtford90/vision"
 }

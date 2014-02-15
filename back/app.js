@@ -44,11 +44,41 @@ if ('development' == app.get('env')) {
 //       Logger.info('Created default user', user);
 //    });
 
+
+statusCodes = {
+    0: 'Unknown',
+    1: 'Success',
+    2: 'SSH Failure',
+    3: 'No path specified'
+};
+
+function badRequest(res, errorCode, extra) {
+    res.setHeader('Content-Type', 'application/json');
+    res.status(400);
+    var errorMessage = 'Unknown';
+    if (errorCode in statusCodes) errorMessage = statusCodes[errorCode];
+    var response_data = {
+        error: {
+            code: errorCode,
+            message: errorMessage
+        }
+    };
+    if (extra) response_data[error].extra = extra;
+    res.end(JSON.stringify(response_data));
+}
+
+function success(res, data) {
+    res.setHeader('Content-Type', 'application/json');
+    res.end(JSON.stringify({
+        data: data
+    }));
+}
+
 app.sshPool = new ssh.SSHConnectionPool({
     host: '46.51.201.85',
     port: 22,
     username: 'ubuntu',
-    privateKey: require('fs').readFileSync('/home/clarity/mosayc.pem')
+    privateKey: require('fs').readFileSync('/Users/mtford/Dropbox/Drake/Server-Side/dev.pem')
 });
 
 app.get('/', function(req, res) {
@@ -59,59 +89,94 @@ app.get('/', function(req, res) {
 
 app.get('/stats/swap', function (req, res) {
     app.sshPool.oneShot(function (err, client) {
-        client.swapUsedPercentage(function (error, perc) {
-            success(res,perc);
-        });
+        if (err) {
+            Logger.error('Error getting swap used over ssh: ', err);
+            badRequest(res,2);
+        }
+        else {
+            client.swapUsedPercentage(function (error, perc) {
+                if (error) {
+                    Logger.error('Error getting swap used: ', err);
+                    badRequest(res, 0);
+                }
+                else {
+                    success(res,perc);
+                }
+            });
+        }
     });
 });
 
 app.get('/stats/cpu', function (req, res) {
     app.sshPool.oneShot(function (err, client) {
-        client.averageLoad(function (error, avg) {
-            success(res,avg);
-        });
+        if (err) {
+            Logger.error('Cannot execute one shot for cpu stat: ', err);
+            badRequest(res, 2);
+        }
+        else {
+            client.averageLoad(function (error, avg) {
+                if (error) {
+                    Logger.error('Error getting average load: ', error);
+                    badRequest(res, 0);
+                }
+                else {
+                    success(res,avg);
+                }
+            });
+        }
     });
 });
 
 app.get('/stats/percUsed', function (req, res) {
     var path = req.query.path;
     if (!path) {
-        badRequest(res, 'Need to give a path');
+        badRequest(res, 3);
     }
     else {
         app.sshPool.oneShot(function (err, client) {
-            client.percentageUsed(path, function (error, data) {
-                success(res, data);
-            });
+            if (err) {
+                Logger.error('SSH error when getting percentage memory used:', err);
+                badRequest(res, 2);
+            }
+            else {
+                client.percentageUsed(path, function (error, data) {
+                    if (error) {
+                        Logger.error('Error calculating percentage used:', error);
+                        badRequest(res, 0);
+                    }
+                    else {
+                        success(res, data);
+                    }
+                });
+            }
+
         });
     }
 });
 
-function badRequest(res, errorMessage) {
-    res.setHeader('Content-Type', 'application/json');
-    res.status(400);
-    res.end(JSON.stringify({
-        'error': errorMessage
-    }))
-}
-
-function success(res, data) {
-    res.setHeader('Content-Type', 'application/json');
-    res.end(JSON.stringify({
-        data: data
-    }));
-}
 
 app.get('/stats/percFree', function (req, res) {
     var path = req.query.path;
     if (!path) {
-        badRequest(res, 'Need to give a path');
+        badRequest(res, 3);
     }
     else {
         app.sshPool.oneShot(function (err, client) {
-            client.percentageFree(path, function (error, data) {
-                success(res, data);
-            });
+            if (err) {
+                Logger.error('SSH error when getting percentage memory free:', err);
+                badRequest(res, 2);
+            }
+            else {
+                client.percentageFree(path, function (error, data) {
+                    if (error) {
+                        Logger.error('Error when getting percentage memory free:', err)
+                    }
+                    else {
+                        success(res, data);
+                    }
+                });
+            }
+
         });
     }
 });

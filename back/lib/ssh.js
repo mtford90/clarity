@@ -180,7 +180,12 @@ var SSHConnectionPool = function(options) {
     this.release = this.pool.release;
     this.oneShot = function(callback) {
         self.acquire(function(err, client) {
-            callback(err, client);
+            if (err || client) {
+                callback(err, client);
+            }
+            else {
+                callback('Unable to obtain an SSH client connection', null);
+            }
             self.release(client);
         });
     };
@@ -218,7 +223,7 @@ var SSHConnectionPool = function(options) {
                     callback(null,client);
                 });
                 client.on('error', function(e) {
-                    log('warn', 'Error in ssh connection');
+                    log('error', 'Error in ssh connection: ' + e);
                     callback(e,null);
                 });
                 client.on('end', function() {
@@ -226,9 +231,6 @@ var SSHConnectionPool = function(options) {
                 });
                 client.on('close', function() {
                     log('info', 'Connection closed');
-//                    if (had_error) {
-//                        self.pool.destroy(client);
-//                    }
                 });
                 client.connect({
                     host: self.host,

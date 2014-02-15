@@ -4,7 +4,7 @@
 
 var Winston = require('winston');
 
-exports.logger = new (Winston.Logger) ({
+var Logger = new (Winston.Logger)({
     transports: [
         new (Winston.transports.Console)({ json: false, timestamp: true, level: 'debug' })
     ],
@@ -13,3 +13,17 @@ exports.logger = new (Winston.Logger) ({
 //    ],
     exitOnError: false
 });
+
+exports.logger = Logger;
+
+Logger.debug('Logging initialised');
+Logger.debug('Reading config');
+
+//noinspection JSUnresolvedVariable
+var configFile = process.env.CLARITY_CONF;
+if (!configFile) {
+    configFile = __dirname + '/../clarity.conf.json';
+    Logger.debug('CLARITY_CONF not specified, therefore using default: ' + configFile)
+}
+
+exports.jsonConfig = JSON.parse(require('fs').readFileSync(configFile));

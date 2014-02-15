@@ -167,7 +167,7 @@ var SSHConnectionPool = function(options) {
     var self = this;
 
     // The below specifies available options  
-    defaultOptions = {
+    var defaultOptions = {
         host: '',
         port: null,
         username: '',
@@ -205,14 +205,10 @@ var SSHConnectionPool = function(options) {
         });
     };
 
-
-
-
     /**
      * Initialise connection pool
      */
     function init () {
-        Logger.debug('Initalising SSH Connection with options: ', options);
         self.options = Util.mergeOptions(defaultOptions, options);
         self.pool = poolModule.Pool({
             name     : 'ssh',
@@ -233,10 +229,10 @@ var SSHConnectionPool = function(options) {
                     log('info', 'Connection closed');
                 });
                 client.connect({
-                    host: self.host,
-                    port: self.port,
-                    username: self.username,
-                    privateKey: self.privateKey
+                    host: self.options.host,
+                    port: self.options.port,
+                    username: self.options.username,
+                    privateKey: self.options.privateKey
                 });
 
             },

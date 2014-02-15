@@ -20,6 +20,9 @@ module.exports = {
         var pool = new SSH.SSHConnectionPool(options);
         pool.oneShot(function(err, client) {
             test.ok(!err, 'Error acquiring a client: ' + err);
+            test.ok(client != null, 'No client returned');
+
+
             client.memoryInfo(function (error, data) {
                 test.ok(!error, 'Error returned: ' + error);
                 test.ok(data, 'Failed to get any data');

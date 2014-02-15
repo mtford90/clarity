@@ -58,7 +58,7 @@ a {
 /* Gridster styles */
 .demo {
     /*margin: 3em 0;*/
-    padding: 7.5em 0 5.5em;
+    /*padding: 7.5em 0 5.5em;*/
     background: #004756;
 }
 
@@ -102,6 +102,32 @@ a {
 #grid-add-button :hover {
     color: #004756;
     background: #ffffff;
+}
+
+#opt-buttons {
+    padding: 10px;
+    text-align: right;
+}
+
+.opt-button {
+    display: inline-block;
+    /*background: #ffffff;*/
+    height: 49px;
+    /*border: 1px #ffffff;*/
+    cursor: pointer;
+    padding-right: 5px;
+}
+
+.opt-button:hover {
+    background: white;
+}
+
+.opt-button-img {
+    display: inline;
+    height: 49px;
+    width: 49px;
+    text-align: center;
+
 }
 
 

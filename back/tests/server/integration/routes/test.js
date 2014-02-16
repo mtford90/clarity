@@ -5,11 +5,11 @@
 
 var request = require('supertest');
 var app = require("../../../../app");
-var Utils = require("../../../../lib/utils");
-var Logger = require('../../../../config').logger;
-var should = require('should');
+var expect = require('expect.js');
 
 const REGEX_FLOAT = /^[0-9]*[.][0-9]+$/;
+const REGEX_FLOAT_OR_INT = /^[0-9]*([.][0-9]+)?$/;
+
 
 describe('GET /stats', function() {
 
@@ -38,7 +38,7 @@ describe('GET /stats', function() {
             successfulJsonRequest(swapUrl)
             .end(function (err, res) {
                 if (err) return done(err);
-                res.body.data.should.match(REGEX_FLOAT);
+                expect(res.body.data).to.match(REGEX_FLOAT);
                 done()
             });
         });
@@ -60,7 +60,7 @@ describe('GET /stats', function() {
                 successfulJsonRequest(percUsedUrl)
                     .end(function (err, res) {
                         if (err) return done(err);
-                        res.body.data.should.match(REGEX_FLOAT);
+                        expect(res.body.data).to.match(REGEX_FLOAT);
                         done()
                     });
             });
@@ -90,7 +90,7 @@ describe('GET /stats', function() {
             successfulJsonRequest(percFreeUrl)
                     .end(function (err, res) {
                         if (err) return done(err);
-                    res.body.data.should.match(REGEX_FLOAT);
+                    expect(res.body.data).to.match(REGEX_FLOAT);
                     done()
                     });
         });
@@ -117,9 +117,9 @@ describe('GET /stats', function() {
             successfulJsonRequest(cpuUrl)
                 .end(function (err, res) {
                     if (err) return done(err);
-                    res.body.data[1].should.match(REGEX_FLOAT);
-                    res.body.data[5].should.match(REGEX_FLOAT);
-                    res.body.data[15].should.match(REGEX_FLOAT);
+                    expect(res.body.data[1]).to.match(REGEX_FLOAT_OR_INT);
+                    expect(res.body.data[5]).to.match(REGEX_FLOAT_OR_INT);
+                    expect(res.body.data[15]).to.match(REGEX_FLOAT_OR_INT);
                     done()
                 });
         });

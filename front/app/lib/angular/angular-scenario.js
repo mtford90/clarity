@@ -14734,7 +14734,7 @@ function $TemplateCacheProvider() {
  * compile the content of the element and make it available to the directive.
  * Typically used with {@link api/ng.directive:ngTransclude
  * ngTransclude}. The advantage of transclusion is that the linking function receives a
- * transclusion function which is pre-bound to the correct scope. In a typical setup the widget
+ * transclusion function which is pre-bound to the correct scope. In a typical initClarityBackend the widget
  * creates an `isolate` scope, but the transclusion is not a child, but a sibling of the `isolate`
  * scope. This makes it possible for the widget to have private state, and the transclusion to
  * be bound to the parent (pre-`isolate`) scope.

@@ -976,7 +976,7 @@ angular.mock.dump = function(object) {
  *
  *
  * # Unit testing with mock $httpBackend
- * The following code shows how to setup and use the mock backend when unit testing a controller.
+ * The following code shows how to initClarityBackend and use the mock backend when unit testing a controller.
  * First we create the controller under test:
  *
   <pre>
@@ -1002,7 +1002,7 @@ angular.mock.dump = function(object) {
   }
   </pre>
  *
- * Now we setup the mock backend and create the test specs:
+ * Now we initClarityBackend the mock backend and create the test specs:
  *
   <pre>
     // testing controller
@@ -1760,7 +1760,7 @@ angular.module('ngMockE2E', ['ng']).config(['$provide', function($provide) {
  * testing. For this reason the e2e $httpBackend automatically flushes mocked out requests
  * automatically, closely simulating the behavior of the XMLHttpRequest object.
  *
- * To setup the application to run with this http backend, you have to create a module that depends
+ * To initClarityBackend the application to run with this http backend, you have to create a module that depends
  * on the `ngMockE2E` and your application modules and defines the fake backend:
  *
  * <pre>

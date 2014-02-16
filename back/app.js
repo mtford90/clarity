@@ -4,10 +4,13 @@
  */
 
 var Logger = require('./config').logger;
-
+var ssh = require('./lib/ssh');
+var data = require('./lib/data');
 var express = require('express');
 var http = require('http');
 var path = require('path');
+var async = require('async');
+var _ = require('underscore');
 
 var app = express();
 
@@ -31,68 +34,118 @@ if ('development' == app.get('env')) {
   app.use(express.errorHandler());
 }
 
-//var Data = require('./lib/data');
-//
-//Data.sequelize.sync().success(function() {
-
-//app.defaultUser = Data.User.create({
-//    user: 'default'
-//}).success(function (user) {
-//       Logger.info('Created default user', user);
-//    });
-
-
 app.get('/', function(req, res) {
     var indexPath = path.resolve(__dirname + '/../front/app/index.html');
     Logger.info('Path is ' + indexPath);
     res.sendfile(indexPath);
 });
 
-var ssh = require('./lib/ssh');
-var data = require('./lib/data');
+/**
+ * Drain all pools
+ * @param callback
+ */
+app.resetPools = function (callback) {
+    var pools = [];
+    for (var key in app.sshPools) {
+        //noinspection JSUnfilteredForInLoop
+        pools.push(app.sshPools[key]);
+    }
+    async.each(pools, function (pool, eachCallback) {
+        Logger.info('Clearing pool: ' + pool.toString());
+        pool.drain(function (err) {
+            if (err) {
+                Logger.error('Error clearing pool: ', err);
+            }
+            else {
+                Logger.info('Cleared pool: ' + pool.toString());
+            }
+            eachCallback(err);
+        })
+    }, function (err) {
+        if (!err) {
+            app.sshPools = {};
+        }
+        callback(err);
+    });
+};
 
-var sshPool = new ssh.SSHConnectionPool({
-    host: '46.51.201.85',
-    port: 22,
-    username: 'ubuntu',
-    privateKey: require('fs').readFileSync('/Users/mtford/Dropbox/Drake/Server-Side/dev.pem')
-//    privateKey: require('fs').readFileSync('/home/clarity/mosayc.pem')
-});
-var database = new data.ClarityDB();
+app.clearDb = function (callback) {
+    Logger.info('Clearing DB');
+    app.db.clear(function (err) {
+        if (err) {
+            Logger.error('Error clearing db ', err);
+        }
+        else {
+            Logger.info('Cleared DB');
+        }
+        callback(err);
+    });
+};
+
+/**
+ * Reset function used by unit + integration tests to clear out the DB and SSH pools.
+ * @param callback
+ */
+app.reset = function (callback) {
+    Logger.debug('Resetting app');
+
+    async.parallel([
+        app.clearDb,
+        app.resetPools
+    ], function (err) {
+        if (err) throw err;
+        else callback();
+    });
+
+};
+
+
+initClarityBackend();
+
+/**
+ * Initalises the DB before then initalising SSH pools. Then calls setupApp
+ */
+function initClarityBackend() {
+    var database = new data.ClarityDB();
+
+    Logger.info('DB init successful, initalising ssh pools');
+
+    database.getServers(function (err, servers) {
+        if (err) {
+            Logger.fatal('Unable to get servers from database');
+            throw err;
+        }
+        else {
+            Logger.info('SSH init successful, initialising http server');
+            if (!servers.length) Logger.warn('No SSH servers configured');
+            var sshPools = {};
+            for (var i = 0; i < servers.length; i++) {
+                var server = servers[i];
+                Logger.info('Initalising SSH pool for', server.name);
+                sshPools[server._id] = new ssh.SSHConnectionPool(server);
+            }
+            setupApp(sshPools, database);
+        }
+    });
+}
+
+/**
+ * Setup individual express apps for each
+ * @param sshPools
+ * @param database
+ */
+function setupApp(sshPools, database) {
+    var statsApp = require('./endpoints/stats');
+    var serverApp = require('./endpoints/server');
+    app.db = database;
+    app.sshPools = sshPools;
+    app.use('/server', statsApp(app));
+    app.use('/server', serverApp(app));
+    http.createServer(app).listen(app.get('port'), function () {
+        console.log('Express server listening on port ' + app.get('port'));
+    });
+}
 
 //database.addServer('46.51.201.85', 22, )
 
-var statsApp = require('./endpoints/stats');
-var serverApp = require('./endpoints/server');
-
-
-statsApp.sshPool = sshPool;
-statsApp.db = database;
-
-
-//app.sshPool = sshPool;
-
-app.use('/stats', statsApp);
-
-
-//app.get('/users/default/grid', function (req, res) {
-//    res.setHeader('Content-Type', 'application/json');
-//    var grid = app.defaultUser.grid;
-//    Logger.debug('Grid: ', grid);
-//    res.end(grid ? grid.toString() : "");
-//});
-//
-//app.put('/users/default/grid', function (req, res) {
-//    var grid = JSON.stringify(req.body);
-//    Logger.debug('raw body is ', grid);
-//    app.defaultUser.grid = grid;
-//    res.end();
-//});
-
-http.createServer(app).listen(app.get('port'), function(){
-    console.log('Express server listening on port ' + app.get('port'));
-});
-
 module.exports = app;
-
-

@@ -5,7 +5,7 @@
 
 (function() {
 
-  // Baseline setup
+  // Baseline initClarityBackend
   // --------------
 
   // Establish the root object, `window` in the browser, or `exports` on the server.

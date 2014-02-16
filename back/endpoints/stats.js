@@ -6,13 +6,16 @@ var response = require('./response');
 var Logger = require('../config').logger;
 
 // One-shot stats module
-module.exports = function(){
+module.exports = function(mainApp){
 
     var express = require('express');
     var app = express();
 
-    app.get('/swap', function (req, res) {
-        app.sshPool.oneShot(function (err, client) {
+    app.get('/:id/stats/swap', function (req, res) {
+        var id = req.params.id;
+        Logger.debug('Received request for swap for ident',id);
+        var sshPool = mainApp.sshPools[ id];
+        sshPool.oneShot(function (err, client) {
             if (err) {
                 Logger.error('Error getting swap used over ssh: ', err);
                 response.badRequest(res,2);
@@ -31,8 +34,9 @@ module.exports = function(){
         });
     });
 
-    app.get('/cpu', function (req, res) {
-        app.sshPool.oneShot(function (err, client) {
+    app.get('/:id/stats/cpu', function (req, res) {
+        var sshPool = mainApp.sshPools[req.params.id];
+        sshPool.oneShot(function (err, client) {
             if (err) {
                 Logger.error('Cannot execute one shot for cpu stat: ', err);
                 response.badRequest(res, 2);
@@ -51,13 +55,14 @@ module.exports = function(){
         });
     });
 
-    app.get('/percUsed', function (req, res) {
+    app.get('/:id/stats/percUsed', function (req, res) {
         var path = req.query.path;
         if (!path) {
             response.badRequest(res, 3);
         }
         else {
-            app.sshPool.oneShot(function (err, client) {
+            var sshPool = mainApp.sshPools[req.params.id];
+            sshPool.oneShot(function (err, client) {
                 if (err) {
                     Logger.error('SSH error when getting percentage memory used:', err);
                     response.badRequest(res, 2);
@@ -78,13 +83,14 @@ module.exports = function(){
         }
     });
 
-    app.get('/percFree', function (req, res) {
+    app.get('/:id/stats/percFree', function (req, res) {
         var path = req.query.path;
         if (!path) {
             response.badRequest(res, 3);
         }
         else {
-            app.sshPool.oneShot(function (err, client) {
+            var sshPool = mainApp.sshPools[req.params.id];
+            sshPool.oneShot(function (err, client) {
                 if (err) {
                     Logger.error('SSH error when getting percentage memory free:', err);
                     response.badRequest(res, 2);
@@ -99,11 +105,10 @@ module.exports = function(){
                         }
                     });
                 }
-
             });
         }
     });
 
     return app;
 
-}();
+};

@@ -6,6 +6,7 @@ var SSH = require('../../../../lib/ssh');
 var Utils = require('../../../../lib/utils');
 var Logger = require('../../../../config').logger;
 
+
 var options = {
     host: '46.51.201.85',
     port: 22,
@@ -21,8 +22,6 @@ module.exports = {
         pool.oneShot(function(err, client) {
             test.ok(!err, 'Error acquiring a client: ' + err);
             test.ok(client != null, 'No client returned');
-
-
             client.memoryInfo(function (error, data) {
                 test.ok(!error, 'Error returned: ' + error);
                 test.ok(data, 'Failed to get any data');

@@ -19,4 +19,12 @@ exports.mergeOptions = function(defaultOpts, options){
 
 exports.isFloat = function(n) {
     return typeof n === 'number' && n % 1 !== 0;
-}
+};
+
+String.prototype.format = function() {
+    var formatted = this;
+    for( var arg in arguments ) {
+        formatted = formatted.replace("{" + arg + "}", arguments[arg]);
+    }
+    return formatted;
+};

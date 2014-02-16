@@ -255,6 +255,10 @@ var SSHConnectionPool = function(options) {
         Logger.log(level, message);
     }
 
+    this.toString = function() {
+        return 'Pool<' + self.options.username + '@' + self.options.host + ":" + self.options.port.toString();
+    };
+
 };
 
 exports.SSHConnectionPool = SSHConnectionPool;

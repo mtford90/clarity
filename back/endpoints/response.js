@@ -24,6 +24,12 @@ function badRequest(res, errorCode, extra) {
     res.end(JSON.stringify(response_data));
 }
 
+function serverError(res, err) {
+    res.setHeader('Content-Type', 'application/json');
+    res.status(500);
+    res.end(JSON.stringify({error:err}));
+}
+
 function success(res, data) {
     res.setHeader('Content-Type', 'application/json');
     res.end(JSON.stringify({
@@ -34,3 +40,4 @@ function success(res, data) {
 exports.statusCodes = statusCodes;
 exports.badRequest = badRequest;
 exports.success = success;
+exports.serverError = serverError;

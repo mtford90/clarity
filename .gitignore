@@ -16,3 +16,4 @@ node_modules
 front/app/lib/bower_components
 
 .DS_Store
+.idea

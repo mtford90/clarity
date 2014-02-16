@@ -6,6 +6,7 @@
 var response = require('./response');
 var Logger = require('../config').logger;
 var ssh = require('../lib/ssh');
+var async = require('async');
 
 // One-shot stats module
 module.exports = function(mainApp){
@@ -53,6 +54,15 @@ module.exports = function(mainApp){
         })
     });
 
+    function drainSSHPoolForServerId(id, callback) {
+        mainApp.sshPools[id].drain(function (err) {
+            if (!err) {
+                delete mainApp.sshPools[id];
+            }
+            callback(err);
+        });
+    }
+
     app.del('/:id', function (req, res) {
         var id = req.params.id;
         Logger.debug('Received request to delete server with identifier ' + id);
@@ -61,12 +71,11 @@ module.exports = function(mainApp){
                 response.serverError(res,err);
             }
             else {
-                mainApp.sshPools[id].drain(function (err) {
+                drainSSHPoolForServerId(id, function(err) {
                     if (err) {
-                        response.serverError(res,err);
+                        response.serverError(res, err);
                     }
                     else {
-                        delete mainApp.sshPools[id];
                         response.success(res);
                     }
                 });
@@ -75,7 +84,24 @@ module.exports = function(mainApp){
     });
 
     app.put('/:id', function (req, res) {
-
+        var id = req.params.id;
+        var server = req.body;
+        mainApp.db.update({_id:id}, server, {}, function(err) {
+            if (err) {
+                response.serverError(res,err);
+            }
+            else { // TODO: Only drain and reconfigure if host/port etc changed, not name.
+                drainSSHPoolForServerId(id, function(err) {
+                    if (err) {
+                        response.serverError(res, err);
+                    }
+                    else {
+                        addServerConfigurationToSSHPool(server);
+                        response.success(res);
+                    }
+                });
+            }
+        })
     });
 
 //    app.get('/users/default/grid', function (req, res) {

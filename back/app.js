@@ -50,6 +50,7 @@ app.resetPools = function (callback) {
         //noinspection JSUnfilteredForInLoop
         pools.push(app.sshPools[key]);
     }
+    app.sshPools = {};
     async.each(pools, function (pool, eachCallback) {
         Logger.info('Clearing pool: ' + pool.toString());
         pool.drain(function (err) {
@@ -60,13 +61,16 @@ app.resetPools = function (callback) {
                 Logger.info('Cleared pool: ' + pool.toString());
             }
             eachCallback(err);
-        })
+        });
     }, function (err) {
-        if (!err) {
-            app.sshPools = {};
+        if (err) {
+            Logger.error('Error draining ssh pools: ',err);
         }
-        callback(err);
+        else {
+            Logger.debug('Drained ssh pools successfully');
+        }
     });
+    callback(null);
 };
 
 app.clearDb = function (callback) {
@@ -96,9 +100,7 @@ app.reset = function (callback) {
         if (err) throw err;
         else callback();
     });
-
 };
-
 
 initClarityBackend();
 

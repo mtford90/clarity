@@ -110,6 +110,38 @@ describe("routes", function () {
 
     });
 
+    describe('PUT /server/:id', function () {
+
+//        beforeEach(function (done) {
+//
+//        });
+
+        it("should take new details", function (done) {
+            var newServer = config.server;
+            newServer.name = 'aNewName';
+            request(app)
+                .put('/server/'+server._id)
+                .set('Content-Type', 'application/json')
+                .send(newServer)
+                .set('Accept', 'application/json')
+                .expect('Content-Type', /json/)
+                .expect(200)
+                .end(function (err, res) {
+                    expect(err).to.not.be.ok;
+                    app.db.getObject(server._id, function(err, server) {
+                        expect(server).to.have.ownProperty('_id');
+                        expect(server).to.have.ownProperty('name');
+                        expect(server.name).to.equal('aNewName');
+                        done();
+
+                    });
+                });
+        });
+
+
+
+    });
+
     describe('GET /server/:id/stats', function() {
 
         function jsonRequest(url) {

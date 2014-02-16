@@ -42,14 +42,37 @@ if ('development' == app.get('env')) {
 //    });
 
 
-app.use('/stats', require('./endpoints/stats'));
-
-
 app.get('/', function(req, res) {
     var indexPath = path.resolve(__dirname + '/../front/app/index.html');
     Logger.info('Path is ' + indexPath);
     res.sendfile(indexPath);
 });
+
+var ssh = require('./lib/ssh');
+var data = require('./lib/data');
+
+var sshPool = new ssh.SSHConnectionPool({
+    host: '46.51.201.85',
+    port: 22,
+    username: 'ubuntu',
+    privateKey: require('fs').readFileSync('/Users/mtford/Dropbox/Drake/Server-Side/dev.pem')
+//    privateKey: require('fs').readFileSync('/home/clarity/mosayc.pem')
+});
+var database = new data.ClarityDB();
+
+//database.addServer('46.51.201.85', 22, )
+
+var statsApp = require('./endpoints/stats');
+var serverApp = require('./endpoints/server');
+
+
+statsApp.sshPool = sshPool;
+statsApp.db = database;
+
+
+//app.sshPool = sshPool;
+
+app.use('/stats', statsApp);
 
 
 //app.get('/users/default/grid', function (req, res) {

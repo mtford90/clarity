@@ -6,6 +6,7 @@ var Config = require('../config').jsonConfig;
 var Logger = require('../config').logger;
 var fs = require('fs');
 var util = require("util");
+var utils = require('../lib/utils');
 
 var dataFile = Config.data;
 
@@ -70,24 +71,32 @@ var ClarityDB = function (dataFile) {
 
 util.inherits(ClarityDB, Nedb);
 
+ClarityDB.prototype.addServer = function (opts, callback) {
 
-ClarityDB.prototype.addServer = function (name, host, port, privateKeyPath, callback) {
+    var defaults = {
+        name: 'unnamed',
+        host: 'localhost',
+        port: 22,
+        username: 'ubuntu',
+        password: '',
+        privateKeyPath: ''
+    };
+
+    var server = utils.mergeOptions(defaults, opts);
+
     var err;
-    port = parseInt(port);
-    if (typeof(name) != "string") err = 'name must be string type';
-    else if (typeof(host) != "string") err = 'host must be string type';
-    else if (typeof(privateKeyPath) != "string") err = 'key path must be string type';
-    else if (!port) err = 'port is of invalid type';
+    server.port = parseInt(server.port);
+    if (typeof(server.name) != "string") err = 'name must be string type';
+    else if (typeof(server.host) != "string") err = 'host must be string type';
+    else if (typeof(server.username) != "string") err = 'username must be string type';
+    else if (typeof(server.password) != "string") err = 'password must be string type';
+    else if (typeof(server.privateKeyPath) != "string") err = 'key path must be string type';
+    else if (!server.port) err = 'port is of invalid type';
     if (err && callback) {
         callback(err);
     }
     else {
-        this.insert({
-            name: name,
-            host: host,
-            port: port,
-            privateKeyPath: privateKeyPath
-        }, function (err, newDoc) {
+        this.insert(server, function (err, newDoc) {
             if (err) {
                 Logger.error('Error inserting server: ', err);
             }

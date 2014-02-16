@@ -46,7 +46,13 @@ describe("Manipulating stored servers", function () {
 
         beforeEach(function (done) {
             Logger.info('Setting up');
-            db.addServer('local', 'localhost', 22, '/home/ubuntu/ssh/id_rsa/', function (err, newObj) {
+            db.addServer({
+                name: 'local',
+                host: 'localhost',
+                port: 22,
+                username: 'ubuntu',
+                privateKeyPath: '/home/ubuntu/ssh/id_rsa/'
+            }, function (err, newObj) {
                 expect(err).to.not.be.ok();
                 Logger.info('Created new server object', newObj);
                 expect(newObj).to.be.ok();
@@ -102,7 +108,13 @@ describe("Manipulating stored servers", function () {
         });
 
         it("Port as string", function (done) {
-            db.addServer('local', 'localhost', "22", '/home/ubuntu/ssh/id_rsa/', function (err, newObj) {
+            db.addServer({
+                name: 'local',
+                host: 'localhost',
+                port:  "22",
+                username: 'ubuntu',
+                privateKeyPath: '/home/ubuntu/ssh/id_rsa/'
+            }, function (err, newObj) {
                 expect(err).to.not.be.ok();
                 Logger.info('Created new server object', newObj);
                 expect(newObj).to.be.ok();
@@ -115,7 +127,13 @@ describe("Manipulating stored servers", function () {
     describe("Invalid Usage", function () {
 
         it("invalid name", function (done) {
-            db.addServer(345345, 'localhost', 22, '/home/ubuntu/ssh/id_rsa/', function (err, newObj) {
+            db.addServer({
+                name: 345345,
+                host: 'localhost',
+                port:  22,
+                username: 'ubuntu',
+                privateKeyPath: '/home/ubuntu/ssh/id_rsa/'
+            },  function (err, newObj) {
                 expect(err).to.be.ok();
                 expect(newObj).to.not.be.ok();
                 Logger.info('Error received: ', err);
@@ -124,7 +142,13 @@ describe("Manipulating stored servers", function () {
         });
 
         it("invalid host", function (done) {
-            db.addServer('name', 3523542, 22, '/home/ubuntu/ssh/id_rsa/', function (err, newObj) {
+            db.addServer({
+                name: 'local',
+                host: 3523542,
+                port:  22,
+                username: 'ubuntu',
+                privateKeyPath: '/home/ubuntu/ssh/id_rsa/'
+            }, function (err, newObj) {
                 expect(err).to.be.ok();
                 expect(newObj).to.not.be.ok();
                 Logger.info('Error received: ', err);
@@ -133,7 +157,13 @@ describe("Manipulating stored servers", function () {
         });
 
         it("invalid port", function (done) {
-            db.addServer('name', 'localhost', 'sdfsdf', '/home/ubuntu/ssh/id_rsa/', function (err, newObj) {
+            db.addServer({
+                name: 'local',
+                host: 'fdfs',
+                port:  "asdasdasd",
+                username: 'ubuntu',
+                privateKeyPath: '/home/ubuntu/ssh/id_rsa/'
+            },  function (err, newObj) {
                 expect(err).to.be.ok();
                 expect(newObj).to.not.be.ok();
                 Logger.info('Error received: ', err);
@@ -143,7 +173,13 @@ describe("Manipulating stored servers", function () {
 
 
         it("invalid path", function (done) {
-            db.addServer('name', 'localhost', 22, 34534534, function (err, newObj) {
+            db.addServer({
+                name: 'local',
+                host: 'fdfs',
+                port:  "asdasdasd",
+                username: 'ubuntu',
+                privateKeyPath: 5445
+            }, function (err, newObj) {
                 expect(err).to.be.ok();
                 expect(newObj).to.not.be.ok();
                 Logger.info('Error received: ', err);

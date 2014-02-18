@@ -15,6 +15,8 @@ Clarity has both a javascript client for visualisation as well as a RESTful API 
 
 Live demo + swaggerui will eventually be here: http://getclarity.eu/
 
+Also planned is integration with supervisor (python process control tool) over xml-rpc interface.
+
 ## API Examples
 
 ### Add servers

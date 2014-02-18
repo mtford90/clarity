@@ -198,11 +198,32 @@ ClarityDB.prototype.deleteServers = function(callback) {
     this.deleteObjectsOfType(Types.server, callback);
 };
 
-
+ClarityDB.prototype.setGrid = function(grid, callback) {
+    var self = this;
+    this.find({_type: Types.grid}, function (err, objects) {
+        if (err) {
+            Logger.error('Error getting grid');
+        }
+        else {
+            if (objects.length) {
+                var oldGrid = objects[0];
+                self.update(oldGrid, grid, function (err) {
+                    if (err && callback) callback(err);
+                    else if (callback) callback(null, grid);
+                });
+            }
+            else {
+//                self.insert(grid, )
+            }
+        }
+        if (callback) callback(err);
+    });
+};
 
 exports.ClarityDB = ClarityDB;
 
 var Types = {
-    server: 'server'
+    server: 'server',
+    grid: 'grid'
 };
 exports.Types = Types;

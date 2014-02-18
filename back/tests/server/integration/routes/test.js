@@ -14,7 +14,7 @@ var utils = require('../../../../lib/utils');
 const REGEX_FLOAT = /^[0-9]*[.][0-9]+$/;
 const REGEX_FLOAT_OR_INT = /^[0-9]*([.][0-9]+)?$/;
 
-describe("routes", function () {
+describe("server routes", function () {
 
     var server;
 
@@ -80,8 +80,6 @@ describe("routes", function () {
             done(); // Check beforeeach succeeds
         });
 
-
-
     });
 
     describe('DEL /server/:id', function () {
@@ -111,11 +109,6 @@ describe("routes", function () {
     });
 
     describe('PUT /server/:id', function () {
-
-//        beforeEach(function (done) {
-//
-//        });
-
         it("should take new details", function (done) {
             var newServer = config.server;
             newServer.name = 'aNewName';
@@ -133,13 +126,9 @@ describe("routes", function () {
                         expect(server).to.have.ownProperty('name');
                         expect(server.name).to.equal('aNewName');
                         done();
-
                     });
                 });
         });
-
-
-
     });
 
     describe('GET /server/:id/stats', function() {
@@ -182,7 +171,6 @@ describe("routes", function () {
             var percUsedUrl = '/server/{0}/stats/percUsed?path=/home/ubuntu';
 
             describe("valid requests", function () {
-
 
                 it("should respond with json", function (done) {
                     jsonRequest(percUsedUrl)
@@ -263,4 +251,6 @@ describe("routes", function () {
 
 });
 
+describe("grid", function () {
 
+});

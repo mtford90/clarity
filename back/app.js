@@ -10,7 +10,8 @@ var express = require('express');
 var http = require('http');
 var path = require('path');
 var async = require('async');
-var _ = require('underscore');
+var _ = require('underscore')
+, swagger = require("swagger-node-express");
 
 var app = express();
 
@@ -29,6 +30,14 @@ app.use(express.urlencoded());
 app.use(app.router);
 app.use(express.static(path.join(__dirname, '../front/app')));
 
+swagger.setAppHandler(app);
+swagger.addModels(require('./models'));
+
+swagger.configureDeclaration("clarity", {
+    description : "Operations about Pets",
+    produces: ["application/json"]
+});
+
 // development only
 if ('development' == app.get('env')) {
   app.use(express.errorHandler());
@@ -36,6 +45,12 @@ if ('development' == app.get('env')) {
 
 app.get('/', function(req, res) {
     var indexPath = path.resolve(__dirname + '/../front/app/index.html');
+    Logger.info('Path is ' + indexPath);
+    res.sendfile(indexPath);
+});
+
+app.get('/swagger', function(req, res) {
+    var indexPath = path.resolve(__dirname + '/../front/app/swagger.html');
     Logger.info('Path is ' + indexPath);
     res.sendfile(indexPath);
 });
@@ -137,12 +152,14 @@ function initClarityBackend() {
  * @param database
  */
 function setupApp(sshPools, database) {
+    swagger.configureSwaggerPaths("", "/api-docs", "");
+    swagger.configure("http://localhost:3000", "0.1");
     var statsApp = require('./endpoints/stats');
     var serverApp = require('./endpoints/server');
     app.db = database;
     app.sshPools = sshPools;
-    app.use('/server', statsApp(app));
-    app.use('/server', serverApp(app));
+    statsApp(app);
+    serverApp(app, swagger);
     http.createServer(app).listen(app.get('port'), function () {
         console.log('Express server listening on port ' + app.get('port'));
     });

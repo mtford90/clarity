@@ -3,16 +3,15 @@
  */
 
 
-var response = require('./response');
+var response = require('./util/response');
 var Logger = require('../config').logger;
 var ssh = require('../lib/ssh');
 var async = require('async');
 
 // One-shot stats module
-module.exports = function(mainApp){
+module.exports = function(mainApp, swagger){
 
     var express = require('express');
-    var app = express();
 
     function addServerConfigurationToSSHPool(newObj) {
         Logger.info('Configuring SSH Pool for ', newObj.name);
@@ -20,21 +19,33 @@ module.exports = function(mainApp){
         mainApp.sshPools[id] = new ssh.SSHConnectionPool(newObj);
     }
 
-    app.post('/', function (req, res) {
-        var server = req.body;
-        Logger.debug('New server POSTed:', server.name);
-        mainApp.db.addServer(server, function(err, newObj) {
-            if (err) {
-                response.serverError(res,err);
-            }
-            else {
-                addServerConfigurationToSSHPool(newObj);
-                response.success(res, newObj);
-            }
-        });
+    swagger.addPost({
+        spec: {
+            description: 'Add a new server',
+            method: 'POST',
+            path: '/server',
+            notes: 'Creates new server and initiates SSH pool',
+            summary: 'Add a new server',
+            type: 'Server',
+            nickname: 'createNewServer'
+        },
+        action: function (req, res) {
+            var server = req.body;
+            Logger.debug('New server POSTed:', server.name);
+            mainApp.db.addServer(server, function(err, newObj) {
+                if (err) {
+//                    throw swagger.errors.serverError(err);
+                    response.serverError(res,err);
+                }
+                else {
+                    addServerConfigurationToSSHPool(newObj);
+                    response.success(res, newObj);
+                }
+            });
+        }
     });
 
-    app.del('/', function (req, res) {
+    mainApp.del('/server', function (req, res) {
         Logger.debug('Received request do delete all servers');
         mainApp.db.deleteServers(function (err) {
             if (err) {
@@ -63,7 +74,7 @@ module.exports = function(mainApp){
         });
     }
 
-    app.del('/:id', function (req, res) {
+    mainApp.del('/server/:id', function (req, res) {
         var id = req.params.id;
         Logger.debug('Received request to delete server with identifier ' + id);
         mainApp.db.remove({_id:id}, function (err) {
@@ -83,7 +94,7 @@ module.exports = function(mainApp){
         });
     });
 
-    app.put('/:id', function (req, res) {
+    mainApp.put('/server/:id', function (req, res) {
         var id = req.params.id;
         var server = req.body;
         mainApp.db.update({_id:id}, server, {}, function(err) {
@@ -103,21 +114,5 @@ module.exports = function(mainApp){
             }
         })
     });
-
-//    app.get('/users/default/grid', function (req, res) {
-//        res.setHeader('Content-Type', 'application/json');
-//        var grid = app.defaultUser.grid;
-//        Logger.debug('Grid: ', grid);
-//        res.end(grid ? grid.toString() : "");
-//    });
-//
-//    app.put('/users/default/grid', function (req, res) {
-//        var grid = JSON.stringify(req.body);
-//        Logger.debug('raw body is ', grid);
-//        app.defaultUser.grid = grid;
-//        res.end();
-//    });
-
-    return app;
 
 };

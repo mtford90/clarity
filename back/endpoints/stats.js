@@ -2,7 +2,7 @@
  * Created by mtford on 16/02/2014.
  */
 
-var response = require('./response');
+var response = require('./util/response');
 var Logger = require('../config').logger;
 
 // One-shot stats module

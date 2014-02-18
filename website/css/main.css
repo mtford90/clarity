@@ -1,0 +1,50 @@
+
+
+body {
+    margin: 0;
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
+.Center-Container {
+    position: relative;
+}
+
+.Absolute-Center {
+    width: 50%;
+    height: 50%;
+    overflow: auto;
+    margin: auto;
+    position: absolute;
+    top: 0; left: 0; bottom: 0; right: 0;
+    display: table;
+}
+
+#content {
+    display: table-cell;
+    text-align: center;
+    vertical-align: middle;
+}
+
+#header {
+    font-size: 60px;
+    margin: 0;
+}
+
+#subheader {
+     color: #bcbcbc;
+    position: relative;
+    left: 40px;
+    margin: 0;
+}
+
+#menu {
+    margin-top: 20px;
+}
+
+#menu a {
+    text-decoration: none;
+}
+
+#menu a:hover {
+    text-decoration: underline;
+}

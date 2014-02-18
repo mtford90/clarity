@@ -1,6 +1,8 @@
 vision
 ======
 
+Live demo + swagger will eventually be here: http://getclarity.eu/
+
 ## API Examples
 
 ### Stats

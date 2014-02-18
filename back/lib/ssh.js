@@ -200,7 +200,7 @@ var SSHConnectionPool = function(options) {
             Logger.debug('In drain state');
             self.pool.destroyAllNow(function () {
                 Logger.debug('All destroyed');
-                callback();
+                if (callback) callback();
             });
         });
     };

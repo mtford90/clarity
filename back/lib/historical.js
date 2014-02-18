@@ -11,9 +11,9 @@ var async = require('async')
 
 
 /**
- * An event emitter that will emit stats at a given rate.
+ * An event emitter that will emit server stats at a given rate.
  * @param sshPool - The pool of ssh connections from which to draw statistics.
- * @param {Float} [rate] - The rate at which to collect statistics. Defaults to 1000ms (every 1 second)
+ * @param {float} [rate] - The rate at which to collect statistics. Defaults to 1000ms (every 1 second)
  * @constructor
  */
 var StatsMonitor = function (sshPool, rate) {
@@ -26,18 +26,19 @@ var StatsMonitor = function (sshPool, rate) {
     this.sshPool = sshPool;
     this.rate = rate;
 
-
     if (!this.rate) {
         this.rate = 1000; // Every second
     }
 
     this.start = function () {
         //noinspection JSUnresolvedFunction
-        self.intervalIdentifiers = _.map([swapUsed, load], _.partial(setInterval, [_, self.rate]));
+        self.intervalIdentifiers = _.map([swapUsed, load], function (f) {
+            return setInterval(f, self.rate);
+        });
     };
 
     this.stop = function () {
-        _.map(self.intervalIdentifiers, setInterval);
+        _.map(self.intervalIdentifiers, clearInterval);
     };
 
     function swapUsed () {
@@ -77,14 +78,12 @@ util.inherits(StatsMonitor, EventEmitter);
 /**
  * Listens to a stats monitor and logs any output.
  * @param statsMonitor - An instance of StatsMonitor from which to listen
- * @param {Nedb} nedb - An instance of require('nedb')
  * @constructor
  */
 var LogStatsListener = function (statsMonitor) {
-    if (!(this instanceof LogStatsListener)) 
+    if (!(this instanceof LogStatsListener))
         return new LogStatsListener(statsMonitor);
 
-    this.statsMonitor = statsMonitor;
     this.start = statsMonitor.start;
     this.stop = statsMonitor.stop;
 
@@ -101,10 +100,27 @@ var LogStatsListener = function (statsMonitor) {
     });
 };
 
+///**
+// *
+// * @param statsMonitor
+// * @param {Nedb} nedb - An instance of require('nedb')
+// * @constructor
+// */
+//var NedbStatsListener = function (statsMonitor, nedb) {
+//    if (!(this instanceof NedbStatsListener))
+//        return new NedbStatsListener(statsMonitor);
+//
+//};
 
-var serverConfig = require('../tests/server/integration/config').server;
+exports.StatsMonitor = StatsMonitor;
+exports.LogStatsListener = LogStatsListener;
 
-var pool = new ssh.SSHConnectionPool(serverConfig);
-var monitor = new StatsMonitor(pool);
-var listener = new LogStatsListener(monitor);
-listener.start();
+//var serverConfig = require('../tests/server/integration/config').server;
+//
+//var pool = new ssh.SSHConnectionPool(serverConfig);
+//var monitor = new StatsMonitor(pool);
+//var listener = new LogStatsListener(monitor);
+//
+//listener.start();
+//listener.stop();
+//pool.drain();

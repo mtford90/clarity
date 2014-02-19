@@ -11,7 +11,7 @@ var Logger = require('../../../../config.js').logger
     , nedb =  require('nedb');
 
 var sshConnPool = new ssh.SSHConnectionPool(serverConfig);
-var statsMonitor = new historical.StatsMonitor(sshConnPool);
+var statsMonitor = new historical.StatsMonitor(sshConnPool, ['/home/ubuntu']);
 
 const REGEX_FLOAT = /^[0-9]*[.][0-9]+$/;
 const REGEX_FLOAT_OR_INT = /^[0-9]*([.][0-9]+)?$/;
@@ -36,10 +36,17 @@ describe ('StatsMonitor', function () {
         });
     });
 
+    it("tests emits diskSpaceUsed", function (done) {
+        statsMonitor.once('diskSpaceUsed', function(diskSpaceUsed) {
+            expect(diskSpaceUsed).to.have.property('/home/ubuntu');
+            expect(diskSpaceUsed['/home/ubuntu']).to.match(REGEX_FLOAT_OR_INT);
+            done();
+        });
+    });
+
 });
 
 describe("Statistic Collection & Analysis", function () {
-
 
     var db;
     var listener;
@@ -92,6 +99,16 @@ describe("Statistic Collection & Analysis", function () {
                 });
             });
         });
+
+//        it("tests captures disk usage", function (done) {
+//            statsMonitor.once('cpuUsage', function() {
+//                db.find({type: types.cpuUsage}, function(err, docs) {
+//                    expect(err).to.not.be.ok;
+//                    verifyDocs(docs);
+//                    done();
+//                });
+//            });
+//        });
 
     });
 

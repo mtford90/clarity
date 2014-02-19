@@ -12,28 +12,36 @@ var async = require('async')
 /**
  * An event emitter that will emit server stats at a given rate.
  * @param sshPool - The pool of ssh connections from which to draw statistics.
+ * @param [filePaths] - List of file paths for disk space monitoring
  * @param {float} [rate] - The rate at which to collect statistics. Defaults to 1000ms (every 1 second)
  * @constructor
  */
-var StatsMonitor = function (sshPool, rate) {
+var StatsMonitor = function (sshPool, filePaths, rate) {
     if (!(this instanceof StatsMonitor))
-        return new StatsMonitor(sshPool, rate);
+        return new StatsMonitor(sshPool, filePaths, rate);
 
     var self = this;
     EventEmitter.call(this);
 
     this.sshPool = sshPool;
     this.rate = rate;
+    this.filePaths = filePaths;
 
     if (!this.rate) {
         this.rate = 1000; // Every second
     }
 
     this.start = function () {
-        //noinspection JSUnresolvedFunction
-        self.intervalIdentifiers = _.map([swapUsed, load], function (f) {
+        var functions = [swapUsed, load];
+//        var diskSpaceFunctions = _.map(self.filePaths, function (x) { // TODO: Can't partially apply if only one arg??
+//            return _.partial(diskSpace, x)
+//        });
+        self.intervalIdentifiers = _.map(functions, function (f) {
             return setInterval(f, self.rate);
         });
+        self.intervalIdentifiers.concat(_.map(this.filePaths, function (filePath) {
+            return setInterval(diskSpace, self.rate, filePath);
+        }));
     };
 
     this.stop = function () {
@@ -58,11 +66,28 @@ var StatsMonitor = function (sshPool, rate) {
     function load () { // TODO: Get current CPU rather than 1min avg.
         if (Logger.debug) Logger.debug('Checking avg load');
         self.sshPool.oneShot(function(err, client) {
-            if (err) self.emit();
+            if (err) self.emit('error', err);
             else {
-                client.averageLoad(function(err, load) {
+                client.cpuUsage(function(err, usage) {
                     if (err) self.emit('error', err);
-                    else self.emit('cpuUsage', load[1]);
+                    else self.emit('cpuUsage', usage);
+                });
+            }
+        });
+    }
+
+    function diskSpace (path) {
+        if (Logger.debug) Logger.debug('Checking disk space for ' + path);
+        self.sshPool.oneShot(function(err, client) {
+            if (err) self.emit('error', err);
+            else {
+                client.percentageUsed(path, function(err, usage) {
+                    if (err) self.emit('error', err);
+                    else {
+                        var d = {};
+                        d[path] = usage;
+                        self.emit('diskSpaceUsed', d);
+                    }
                 });
             }
         });

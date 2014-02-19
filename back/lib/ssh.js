@@ -10,8 +10,6 @@ var poolModule = require('generic-pool');
 var _ = require('underscore');
 var util = require("util");
 
-// TODO: Seperate out operations on SSH into prototype methods on ssh client objects instead, leaving just the pool stuff in here.
-
 
 /**
  * Extends Connection with standard operations over ssh.

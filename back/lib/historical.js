@@ -9,7 +9,6 @@ var async = require('async')
     , ssh = require('./ssh')
     , _ = require('underscore');
 
-
 /**
  * An event emitter that will emit server stats at a given rate.
  * @param sshPool - The pool of ssh connections from which to draw statistics.
@@ -38,7 +37,9 @@ var StatsMonitor = function (sshPool, rate) {
     };
 
     this.stop = function () {
-        _.map(self.intervalIdentifiers, clearInterval);
+        Logger.debug('Stopping');
+        _.map(self.intervalIdentifiers, function(x) {clearInterval(x)});
+        Logger.debug('Stopped');
     };
 
     function swapUsed () {
@@ -100,20 +101,136 @@ var LogStatsListener = function (statsMonitor) {
     });
 };
 
-///**
-// *
-// * @param statsMonitor
-// * @param {Nedb} nedb - An instance of require('nedb')
-// * @constructor
-// */
-//var NedbStatsListener = function (statsMonitor, nedb) {
-//    if (!(this instanceof NedbStatsListener))
-//        return new NedbStatsListener(statsMonitor);
-//
-//};
+/**
+*
+* @param statsMonitor
+ * @param {Nedb} db - An instance of require('nedb')
+* @constructor
+*/
+var NedbStatsListener = function (statsMonitor, db) {
+    if (!(this instanceof NedbStatsListener))
+        return new NedbStatsListener(statsMonitor, db);
+
+    this.start = statsMonitor.start;
+    this.stop = statsMonitor.stop;
+
+    function getHost(statsMonitor) {
+        return statsMonitor.sshPool.options.host;
+    }
+
+    statsMonitor.on('error', function(err) {
+        Logger.error('Stats monitor returned error:', err);
+    });
+
+    statsMonitor.on('cpuUsage', function(cpuUsage) {
+        //noinspection JSUnresolvedFunction
+        db.insert({
+            value: cpuUsage,
+            type: NedbStatsListener.types.cpuUsage,
+            host: getHost(statsMonitor),
+            date: new Date()
+        }, function (err, newObj) {
+            if (err) {
+                Logger.error('Error inserting cpu usage into nedb');
+            }
+            else {
+                Logger.debug('Created cpuUsage object with id',newObj._id);
+            }
+        });
+    });
+
+    statsMonitor.on('swapUsed', function(swapUsed) {
+        //noinspection JSUnresolvedFunction
+        db.insert({
+            value: swapUsed,
+            type: NedbStatsListener.types.swapUsed,
+            host: getHost(statsMonitor),
+            date: new Date()
+        }, function (err, newObj) {
+            if (err) {
+                Logger.error('Error inserting swap used into nedb');
+            }
+            else {
+                Logger.debug('Created swapused object with id',newObj._id);
+            }
+        });
+    });
+};
+
+var statTypes = {
+    cpuUsage: 'cpuUsage',
+    swapUsed: 'swapUsed'
+};
+
+NedbStatsListener.types = statTypes;
+
+/**
+ * A wrapper around an nedb instance that provides analytics on the historical stats
+ * @param db
+ * @constructor
+ */
+var Analytics = function (db) {
+
+    /**
+     * Return all cpu usage data points between startDate -> endDate
+     * @param [startDate]
+     * @param [endDate]
+     * @param [callback]
+     */
+    this.cpuUsage = function (startDate, endDate, callback) {
+        var type = statTypes.cpuUsage;
+        range(type, startDate, endDate, callback);
+    };
+
+    /**
+     * Return all swap usage data points between startDate -> endDate
+     * @param [startDate]
+     * @param [endDate]
+     * @param [callback]
+     */
+    this.swapUsage = function (startDate, endDate, callback) {
+        var type = statTypes.swapUsage;
+        range(type, startDate, endDate, callback);
+    };
+
+    function range(type, startDate, endDate, callback) {
+        db.find({date: { $gte: startDate, $lte: endDate, type: type }}, function (err, docs) {
+            var results = null;
+            if (err) Logger.error('Error getting range of ' + type, err);
+            else results = _.pluck(['value'], docs);
+            callback(err, results);
+        });
+    }
+
+    /**
+     * Calculate mean CPU usage between startDate -> endDate
+     * @param [startDate]
+     * @param [endDate]
+     * @param [callback]
+     */
+    this.meanCpuUsage = function (startDate, endDate, callback) {
+        var type = statTypes.cpuUsage;
+        db.find({date: { $gte: startDate, $lte: endDate, type: type }}, function (err, docs) {
+            var results = null;
+            if (err) Logger.error('Error getting range of ' + type, err);
+            else {
+                var n = results.length;
+                results = _.pluck(['value'], docs);
+                results = _.reduce(results, function(memo, num) {
+                    return memo + num;
+                }, 0);
+                results = results / n;
+            }
+            callback(err, results);
+        });
+    };
+
+};
 
 exports.StatsMonitor = StatsMonitor;
 exports.LogStatsListener = LogStatsListener;
+exports.NedbStatsListener = NedbStatsListener;
+exports.Analytics = Analytics;
 
 //var serverConfig = require('../tests/server/integration/config').server;
 //

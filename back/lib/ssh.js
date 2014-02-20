@@ -84,9 +84,9 @@ VisionConnection.prototype.memoryUsed = function(callback) {
         if (err && callback) callback(err, null);
         else {
             var memoryFree = info[self.memInfoKey.MemFree];
-            var buffers = info[self.memInfoKey.Buffers];
+//            var buffers = info[self.memInfoKey.Buffers];
             var cached = info[self.memInfoKey.Cached];
-            var realFree = memoryFree - buffers - cached;
+            var realFree = memoryFree + cached;
             var perc = realFree / info[self.memInfoKey.MemTotal];
             if (callback) callback(null, perc);
         }
@@ -149,14 +149,17 @@ VisionConnection.prototype.memoryInfo = function (callback) {
 VisionConnection.prototype.execute = function(exec_str, callback) {
     var self = this;
     self.exec(exec_str, function (err, stream) {
-        stream.on('data', function (data, extended) {
-            if (extended === 'stderr') {
-                callback (data.toString(), null);
-            }
-            else {
-                if (callback) callback (null, data.toString());
-            }
-        });
+        if (err && callback) callback(err);
+        else {
+            stream.on('data', function (data, extended) {
+                if (extended === 'stderr') {
+                    callback (data.toString(), null);
+                }
+                else {
+                    if (callback) callback (null, data.toString());
+                }
+            });
+        }
     });
 };
 

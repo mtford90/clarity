@@ -139,19 +139,105 @@ describe("Statistic Collection & Analysis", function () {
         var analytics;
 
         before(function (done) {
-            analytics = historical.Analytics(db);
+            analytics = new historical.Analytics(db);
             setTimeout(function () { // Let some stats build up in the db.
                 done();
-            }, 5000);
+            }, 3000);
         });
 
         describe("date ranges", function () {
 
+            function validateResults(results) {
+                for (var i = 0; i < results.length; i++) {
+                    var result = results[i];
+                    expect(result).to.have.property('date');
+                    expect(result.date).to.be.an.instanceOf(Date);
+                    expect(result).to.have.property('value');
+                    expect(result.value).to.match(REGEX_FLOAT_OR_INT);
+                }
+            }
+
             describe("no date specified", function () {
+
+                it("cpuUsage", function (done) {
+                    analytics.cpuUsage(null, null, function(err, results) {
+                        expect(err).to.not.be.ok;
+                        expect(results).to.have.length.above(0);
+                        validateResults(results);
+                        done();
+                    });
+                });
+
+                it("swapUsage", function (done) {
+                    analytics.swapUsage(null, null, function(err, results) {
+                        expect(err).to.not.be.ok;
+                        expect(results).to.have.length.above(0);
+                        validateResults(results);
+                        done();
+                    });
+                });
+
+                it("meanCpuUsage", function (done) {
+                    analytics.meanCpuUsage(null, null, function (err, result) {
+                        expect(err).to.not.be.ok;
+                        expect(result).to.match(REGEX_FLOAT_OR_INT);
+                        done();
+                    });
+                });
 
             });
 
             describe("date specified", function () {
+
+                var startDate;
+                var endDate;
+
+                before(function (done) {
+                    startDate = new Date();
+                    analytics = new historical.Analytics(db);
+                    setTimeout(function () { // Let some stats build up in the db.
+                        endDate = new Date();
+                        setTimeout(function () { // Let some other stats build up.
+                            done();
+                        }, 3000);
+                    }, 3000);
+                });
+
+                it("cpuUsage", function (done) {
+                    analytics.cpuUsage(startDate, endDate, function(err, results) {
+                        expect(err).to.not.be.ok;
+                        expect(results).to.have.length.above(0);
+                        validateResults(results);
+                        validateDatesOfResults(results);
+                        done();
+                    });
+                });
+
+                function validateDatesOfResults(results) {
+                    for (var i = 0; i < results.length; i++) {
+                        var result = results[i];
+                        expect(result.date).to.be.below(endDate);
+                        expect(result.date).to.be.above(startDate);
+                    }
+                }
+
+                it("swapUsage", function (done) {
+                    analytics.swapUsage(startDate, endDate, function(err, results) {
+                        expect(err).to.not.be.ok;
+                        expect(results).to.have.length.above(0);
+                        validateResults(results);
+                        validateDatesOfResults(results);
+                        done();
+                    });
+                });
+
+                it("meanCpuUsage", function (done) {
+                    analytics.meanCpuUsage(startDate, endDate, function (err, result) {
+                        expect(err).to.not.be.ok;
+                        expect(result).to.match(REGEX_FLOAT_OR_INT);
+                        done();
+                    });
+                });
 
             });
 

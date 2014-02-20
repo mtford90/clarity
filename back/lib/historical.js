@@ -260,6 +260,11 @@ NedbStatsListener.types = statTypes;
  */
 var Analytics = function (db) {
 
+    // TODO: Take multiple servers to perform analysis against.
+
+    if (!(this instanceof Analytics))
+        return new Analytics(db);
+
     /**
      * Return all cpu usage data points between startDate -> endDate
      * @param [startDate]
@@ -278,15 +283,19 @@ var Analytics = function (db) {
      * @param [callback]
      */
     this.swapUsage = function (startDate, endDate, callback) {
-        var type = statTypes.swapUsage;
+        var type = statTypes.swapUsed;
         range(type, startDate, endDate, callback);
     };
 
     function range(type, startDate, endDate, callback) {
-        db.find({date: { $gte: startDate, $lte: endDate, type: type }}, function (err, docs) {
+        var query = {type: type};
+        if (startDate || endDate) query.date = {};
+        if (startDate) query.date.$gte = startDate;
+        if (endDate) query.date.$lte = endDate;
+        db.find(query, function (err, docs) {
             var results = null;
             if (err) Logger.error('Error getting range of ' + type, err);
-            else results = _.pluck(['value'], docs);
+            else results = _.map(docs, function (x) {return {date: x.date, value: x.value}});
             callback(err, results);
         });
     }
@@ -299,12 +308,16 @@ var Analytics = function (db) {
      */
     this.meanCpuUsage = function (startDate, endDate, callback) {
         var type = statTypes.cpuUsage;
-        db.find({date: { $gte: startDate, $lte: endDate, type: type }}, function (err, docs) {
+        var query = { type: type};
+        if (startDate || endDate) query.date = {};
+        if (startDate) query.date.$gte = startDate;
+        if (endDate) query.date.$lte = endDate;
+        db.find(query, function (err, docs) {
             var results = null;
             if (err) Logger.error('Error getting range of ' + type, err);
             else {
-                var n = results.length;
-                results = _.pluck(['value'], docs);
+                var n = docs.length;
+                results = _.pluck(docs, 'value');
                 results = _.reduce(results, function(memo, num) {
                     return memo + num;
                 }, 0);

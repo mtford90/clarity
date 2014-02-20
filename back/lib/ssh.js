@@ -75,6 +75,25 @@ VisionConnection.prototype.swapUsedPercentage = function(callback) {
 };
 
 /**
+ * Get percentage swap used as a float
+ * @param callback
+ */
+VisionConnection.prototype.memoryUsed = function(callback) {
+    var self = this;
+    this.memoryInfo(function (err, info) {
+        if (err && callback) callback(err, null);
+        else {
+            var memoryFree = info[self.memInfoKey.MemFree];
+            var buffers = info[self.memInfoKey.Buffers];
+            var cached = info[self.memInfoKey.Cached];
+            var realFree = memoryFree - buffers - cached;
+            var perc = realFree / info[self.memInfoKey.MemTotal];
+            if (callback) callback(null, perc);
+        }
+    })
+};
+
+/**
  * Takes average load over 1 minute, 5 minutes and 15 minutes from uptime command
  * @param callback
  */

@@ -17,6 +17,11 @@ var async = require('async')
  * @constructor
  */
 var StatsMonitor = function (sshPool, filePaths, rate) {
+
+    // TODO: Add multiple server configurations.
+    // TODO: Don't use ssh pools?
+    // TODO: Arguments should be an options dictionary.
+
     if (!(this instanceof StatsMonitor))
         return new StatsMonitor(sshPool, filePaths, rate);
 
@@ -32,7 +37,7 @@ var StatsMonitor = function (sshPool, filePaths, rate) {
     }
 
     this.start = function () {
-        var functions = [swapUsed, load];
+        var functions = [swapUsed, load, memoryUsed];
 //        var diskSpaceFunctions = _.map(self.filePaths, function (x) { // TODO: Can't partially apply if only one arg??
 //            return _.partial(diskSpace, x)
 //        });
@@ -45,13 +50,13 @@ var StatsMonitor = function (sshPool, filePaths, rate) {
     };
 
     this.stop = function () {
-        Logger.debug('Stopping');
+        if (Logger.verbose) Logger.verbose('Stopping stas monitor');
         _.map(self.intervalIdentifiers, function(x) {clearInterval(x)});
-        Logger.debug('Stopped');
+        if (Logger.verbose) Logger.verbose('Stopped stats monitor');
     };
 
     function swapUsed () {
-        if (Logger.debug) Logger.debug('Checking swap used');
+        if (Logger.verbose) Logger.verbose('Checking swap used');
         self.sshPool.oneShot(function(err, client) {
             if (err) self.emit('error', err);
             else {
@@ -64,7 +69,7 @@ var StatsMonitor = function (sshPool, filePaths, rate) {
     }
 
     function load () { // TODO: Get current CPU rather than 1min avg.
-        if (Logger.debug) Logger.debug('Checking avg load');
+        if (Logger.verbose) Logger.verbose('Checking avg load');
         self.sshPool.oneShot(function(err, client) {
             if (err) self.emit('error', err);
             else {
@@ -86,6 +91,7 @@ var StatsMonitor = function (sshPool, filePaths, rate) {
                     else {
                         var d = {};
                         d[path] = usage;
+                        if (Logger.verbose) Logger.verbose('Emitting disk space used');
                         self.emit('diskSpaceUsed', d);
                     }
                 });
@@ -93,8 +99,23 @@ var StatsMonitor = function (sshPool, filePaths, rate) {
         });
     }
 
-    // TODO: Memory usage
+    function memoryUsed () {
+        if (Logger.verbose) Logger.verbose('Checking memory used');
+        self.sshPool.oneShot(function(err, client) {
+            if (err) self.emit('error', err);
+            else {
+                client.memoryUsed(function(err, usage) {
+                    if (err) self.emit('error', err);
+                    else {
+                        if (Logger.verbose) Logger.verbose('Emitting memory used');
+                        self.emit('memoryUsed', usage);
+                    }
+                });
+            }
+        });
+    }
 
+    // TODO: Memory usage
     // TODO: Pass paths to mounts and monitor historical disk space.
 
 };
@@ -133,6 +154,9 @@ var LogStatsListener = function (statsMonitor) {
 * @constructor
 */
 var NedbStatsListener = function (statsMonitor, db) {
+
+    // TODO: Add multiple server configurations
+
     if (!(this instanceof NedbStatsListener))
         return new NedbStatsListener(statsMonitor, db);
 
@@ -164,6 +188,23 @@ var NedbStatsListener = function (statsMonitor, db) {
         });
     });
 
+    statsMonitor.on('memoryUsed', function(value) {
+        //noinspection JSUnresolvedFunction
+        db.insert({
+            value: value,
+            type: NedbStatsListener.types.memoryUsed,
+            host: getHost(statsMonitor),
+            date: new Date()
+        }, function (err, newObj) {
+            if (err) {
+                Logger.error('Error inserting memory usage into nedb');
+            }
+            else {
+                Logger.debug('Created memoryUsed object with id',newObj._id);
+            }
+        });
+    });
+
     statsMonitor.on('swapUsed', function(swapUsed) {
         //noinspection JSUnresolvedFunction
         db.insert({
@@ -180,11 +221,34 @@ var NedbStatsListener = function (statsMonitor, db) {
             }
         });
     });
+
+    statsMonitor.on('diskSpaceUsed', function(diskSpaceUsed) {
+        for (var path in diskSpaceUsed) {
+            //noinspection JSUnfilteredForInLoop
+            db.insert({
+                value: diskSpaceUsed[path],
+                path: path,
+                type: NedbStatsListener.types.diskSpaceUsed,
+                host: getHost(statsMonitor),
+                date: new Date()
+            }, function (err, newObj) {
+                if (err) {
+                    Logger.error('Error inserting swap used into nedb');
+                }
+                else {
+                    Logger.debug('Created diskSpaceUsed object with id',newObj._id);
+                }
+            });
+        }
+    });
+
 };
 
 var statTypes = {
     cpuUsage: 'cpuUsage',
-    swapUsed: 'swapUsed'
+    swapUsed: 'swapUsed',
+    diskSpaceUsed: 'diskSpaceUsed',
+    memoryUsed: 'memoryUsed'
 };
 
 NedbStatsListener.types = statTypes;

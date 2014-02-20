@@ -41,8 +41,21 @@ describe('Stats', function() {
             expect(client).to.be.ok;
             client.swapUsedPercentage(function (error, perc) {
                 expect(error).to.not.be.ok;
-                expect(perc).to.be.ok;
+                expect(perc).to.match(REGEX_FLOAT_OR_INT);
                 Logger.info('Swap percentage used: ', perc);
+                done();
+            });
+        });
+    });
+
+    it("Memory Used", function (done) {
+        pool.oneShot(function(err, client) {
+            expect(err).to.not.be.ok;
+            expect(client).to.be.ok;
+            client.memoryUsed(function (error, memUsed) {
+                expect(error).to.not.be.ok;
+                expect(memUsed).to.match(REGEX_FLOAT_OR_INT);
+                Logger.info('Mem percentage used: ', memUsed);
                 done();
             });
         });

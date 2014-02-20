@@ -36,6 +36,13 @@ describe ('StatsMonitor', function () {
         });
     });
 
+    it("tests emits memoryUsage", function (done) {
+        statsMonitor.once('memoryUsed', function(memoryUsed) {
+            expect(memoryUsed).to.match(REGEX_FLOAT_OR_INT);
+            done();
+        });
+    });
+
     it("tests emits diskSpaceUsed", function (done) {
         statsMonitor.once('diskSpaceUsed', function(diskSpaceUsed) {
             expect(diskSpaceUsed).to.have.property('/home/ubuntu');
@@ -100,15 +107,30 @@ describe("Statistic Collection & Analysis", function () {
             });
         });
 
-//        it("tests captures disk usage", function (done) {
-//            statsMonitor.once('cpuUsage', function() {
-//                db.find({type: types.cpuUsage}, function(err, docs) {
-//                    expect(err).to.not.be.ok;
-//                    verifyDocs(docs);
-//                    done();
-//                });
-//            });
-//        });
+
+        it("tests captures memoryUsed", function (done) {
+            statsMonitor.once('memoryUsed', function() {
+                db.find({type: types.memoryUsed}, function(err, docs) {
+                    expect(err).to.not.be.ok;
+                    verifyDocs(docs);
+                    done();
+                });
+            });
+        });
+
+        it("tests captures disk usage", function (done) {
+            statsMonitor.once('diskSpaceUsed', function() {
+                db.find({type: types.diskSpaceUsed}, function(err, docs) {
+                    expect(err).to.not.be.ok;
+                    verifyDocs(docs);
+                    for (var i=0;i<docs.length;i++) {
+                        var doc = docs[i];
+                        expect(doc).to.have.ownProperty('path');
+                    }
+                    done();
+                });
+            });
+        });
 
     });
 

@@ -1,7 +1,7 @@
 clarity
 ======
 
-Clarity is a server and stock monitoring tool. Through use of SSH pooling it provides agentless monitoring of:
+Clarity is a server and stack monitoring tool. Through use of SSH pooling it provides agentless monitoring of:
 
 * System statistics
   * CPU, memory
